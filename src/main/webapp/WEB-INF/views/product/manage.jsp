@@ -2074,7 +2074,7 @@ function displayImages() {
             <div class="image-item">
                 <img src="\${imgSrc}" alt="\${image.fileOriginalName}">
                 <button type="button" class="remove-btn" onclick="removeImage(\${index})">
-                    <i class="bi bi-x"></i> ×
+                    <i class="bi bi-x"></i>
                 </button>
             </div>`;
     }).join('');

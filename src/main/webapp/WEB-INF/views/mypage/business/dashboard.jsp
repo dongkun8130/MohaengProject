@@ -102,7 +102,7 @@
                         <div class="content-section">
                             <div class="section-header">
                                 <h3><i class="bi bi-receipt"></i> 최근 예약</h3>
-                               <a href="${pageContext.request.contextPath}/mypage/business/products" class="view-all">
+                               <a href="${pageContext.request.contextPath}/product/manage" class="view-all">
    									 전체보기 <i class="bi bi-arrow-right"></i>
 							   </a>
 

@@ -261,15 +261,7 @@
     <!-- 판매 상태 토글 -->
     <update id="toggleSaleStatus" parameterType="map">
 	    UPDATE TRIP_PROD
-	    SET DEL_YN = #{delYn},
-	        <if test='delYn == "Y"'>
-	        APPROVE_STATUS = '판매중지',
-	        DEL_DT = SYSDATE,
-	        </if>
-	        <if test='delYn == "N"'>
-	        APPROVE_STATUS = '판매중',
-	        DEL_DT = NULL,
-	        </if>
+	    SET APPROVE_STATUS = #{approveStatus},
 	        MOD_DT = SYSDATE
 	    WHERE TRIP_PROD_NO = #{tripProdNo}
 	</update>

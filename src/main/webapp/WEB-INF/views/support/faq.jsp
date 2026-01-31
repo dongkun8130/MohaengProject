@@ -218,16 +218,16 @@ function renderFaqList(faqList) {
      const badgeClass = getBadgeClass(faq.faqCategoryCd);
 
      html += `
-         <div class="faq-item" data-category="${faq.faqCategoryCd}" data-id="${faq.faqNo}">/*추가함  */
+         <div class="faq-item" data-category="\${faq.faqCategoryCd}" data-id="\${faq.faqNo}">
              <div class="faq-question">
                  <div class="faq-question-text">
-                     <span class="badge ${badgeClass}">${categoryName}</span>
-                     ${faq.faqTitle}
+                     <span class="badge \${badgeClass}">\${categoryName}</span>
+                     \${faq.faqTitle}
                  </div>
                  <i class="bi bi-chevron-down"></i>
              </div>
              <div class="faq-answer">
-                 <p>${faq.faqContent}</p>
+                 <p>\${faq.faqContent}</p>
              </div>
          </div>
      `;
@@ -291,7 +291,7 @@ document.getElementById('faqSearch').addEventListener('input', function() {
      let hasResult = false;
 
      items.forEach(item => {
-    	 const questionDiv = item.querySelector('.faq-question-text');
+        const questionDiv = item.querySelector('.faq-question-text');
          const badge = questionDiv.querySelector('.badge');
          const titleText = questionDiv.textContent.replace(badge.textContent, '').trim().toLowerCase();
 

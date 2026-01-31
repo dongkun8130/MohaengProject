@@ -309,6 +309,7 @@ document.addEventListener("DOMContentLoaded", async function(){
 
 			    // 5. 화면 전환 및 항공 관련 세션 삭제
 			    document.querySelector(".payment-complete").style.display = "block";
+			    completed3Step();
 			    
 			    sessionStorage.removeItem("flightProduct");
 			    sessionStorage.removeItem("passengers");
@@ -399,6 +400,7 @@ async function processTourPayment(customData, payNo, orderName, payDt, person, t
 		    }
 		    
 		    document.querySelector(".payment-complete").style.display = "block";
+		    completed3Step();
 		    
 		    sessionStorage.removeItem("tourPaymentData");
 		    sessionStorage.removeItem("tourCart");
@@ -500,6 +502,8 @@ async function processAccommodationPayment(customData, payNo, orderName, payDt, 
 	        document.querySelector(".payment-complete").style.display = "block";
 	        sessionStorage.removeItem("pendingBooking"); 
 	        
+	        completed3Step();
+	        
 	        console.log("🏨 숙박 예약 완료 - 주문번호: " + payNo.innerText);
 	    }
     } catch (error) {
@@ -517,6 +521,20 @@ function formatPayNo(dateStr, payNo) {
                    String(date.getDate()).padStart(2, '0');
     var payNoPart = String(payNo).padStart(8, '0');
     return datePart + payNoPart;
+}
+
+function completed3Step() {
+	let completedTag = document.querySelectorAll(".booking-step")[2];
+	// 1. class 추가 (classList.add 사용)
+	completedTag.classList.add("completed");
+	
+	// 2. 내부 HTML 교체
+	completedTag.innerHTML = `
+		<div class="step-icon">
+			<i class="bi bi-check"></i>
+		</div>
+		<span>완료</span>
+	`;
 }
 </script>
 

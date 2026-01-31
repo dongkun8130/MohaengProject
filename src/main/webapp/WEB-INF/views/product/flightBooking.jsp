@@ -19,7 +19,7 @@
         <!-- 결제 단계 -->
         <div class="booking-steps">
             <div class="booking-step active">
-                <div>1</div>
+                <div class="step-icon">1</div>
                 <span>탑승객 정보</span>
             </div>
             <div class="booking-step">

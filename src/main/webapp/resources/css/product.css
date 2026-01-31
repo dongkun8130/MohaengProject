@@ -1014,7 +1014,7 @@
 
 .booking-step.active .step-icon,
 .booking-step.completed .step-icon {
-    background: currentColor;
+    background: var(--success-color);
     color: white;
 }
 

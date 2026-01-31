@@ -63,6 +63,7 @@
 	      	]]>
 	      	</if>
 	        WHERE TP.MEM_NO = #{memNo}
+	        AND TP.DEL_YN != 'Y'
 	        GROUP BY TP.TRIP_PROD_NO, TP.TRIP_PROD_TITLE, TP.VIEW_CNT
 	        )
 	</select>

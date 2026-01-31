@@ -58,9 +58,11 @@
                     <sec:authorize access="isAuthenticated()">
 					    <sec:authentication property="principal.memProfilePath" var="profileImgUrl"/>
 					    <!-- 로그인 상태 - 내 일정 -->
+					    <sec:authorize access="hasRole('MEMBER')">
 					    <button class="header-notification-btn" onclick="openScheduleModal()" title="내 일정">
 						    <i class="bi bi-calendar3"></i>
 						</button>
+						</sec:authorize>
                         <!-- 로그인 상태 - 알림 버튼 -->
                         <button class="header-notification-btn" onclick="toggleNotificationPanel()" title="알림">
                             <i class="bi bi-bell"></i>

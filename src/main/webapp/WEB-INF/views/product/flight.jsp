@@ -205,30 +205,34 @@ const result = document.querySelector('.flight-result'); // 항공권 출력란
 
 // session데이터 가져오기 
 function restoreSearchForm() {
-//     const saved = sessionStorage.getItem('flightProduct');
-//     if (!saved) return;
+    const saved = sessionStorage.getItem('flightProduct');
+    if (!saved) return;
 
-//     const data = JSON.parse(saved);
-//     currentSearchState = data.flights[0]; // 상태 복원
+    const data = JSON.parse(saved);
+    currentSearchState = data.flights[0]; // 상태 복원
 
-//     console.log("복원 코드 : ", currentSearchState);
+
+    // [테스트 1] 세션에서 갓 꺼낸 데이터의 연도 확인 (여기서는 2026이 나올 겁니다)
+    console.log("오리지널 startDt: ", currentSearchState.startDt);
+    
+    console.log("복원 코드 : ", currentSearchState);
 //     // UI 필드 복원
-//     document.querySelector('#departure').value = currentSearchState.depAirportNm;
-//     document.querySelector('#depAirportId').value = currentSearchState.depAirportId;
-//     document.querySelector('#depIataCode').value = currentSearchState.depIata;
-//     document.querySelector('#destination').value = currentSearchState.arrAirportNm;
-//     document.querySelector('#arrAirportId').value = currentSearchState.arrAirportId;
-//     document.querySelector('#arrIataCode').value = currentSearchState.arrIata;
+    document.querySelector('#departure').value = currentSearchState.depAirportNm;
+    document.querySelector('#depAirportId').value = currentSearchState.depAirportId;
+    document.querySelector('#depIataCode').value = currentSearchState.depIata;
+    document.querySelector('#destination').value = currentSearchState.arrAirportNm;
+    document.querySelector('#arrAirportId').value = currentSearchState.arrAirportId;
+    document.querySelector('#arrIataCode').value = currentSearchState.arrIata;
 //     document.querySelector('#departDate').value = currentSearchState.startDt;
 //     document.querySelector('#returnDate').value = data.flights[1].startDt;
     
 //     // 선택한 항목 보여줘야됨
 //     // update로 그것도 보여줘야됨 (오는 편) 그래야지 가능
     
-//     currentSelectionStep = 1;
+    currentSelectionStep = 1;
     
 //     // 복원 후 즉시 검색 실행 (선택 사항)
-//     searchFlights();
+    searchFlights();
 // 아직 좀 조정해야됨
 
 }
@@ -585,16 +589,30 @@ let departurePicker;
 let arrivalPicker;
 // 달력 보여주기위한 설정
 function dateChange(){
+    // 1. 세션 스토리지에서 기존 검색 데이터 가져오기
+    const savedProduct = sessionStorage.getItem('flightProduct');
+    const savedData = savedProduct ? JSON.parse(savedProduct) : null;
+    
+    // 2. 가는날, 오는날 데이터가 있는지 확인하고 YYYY-MM-DD 포맷으로 가공
+    const savedDepDate = savedData && savedData.flights[0] ? savedData.flights[0].startDt.replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3') : null;
+    const savedArrDate = savedData && savedData.flights[1] ? savedData.flights[1].startDt.replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3') : null;
+
+    // 오는날 달력 설정
 	arrivalPicker = flatpickr("#returnDate", {
 		dateFormat: "Y-m-d",
         minDate: "today",
-        locale: "ko"
+        locale: "ko",
+        // [삼항 연산자 적용] 세션 데이터가 있으면 그 날짜를 기본값으로, 없으면 null
+        defaultDate: savedArrDate ? savedArrDate : null 
 	});
 	
+    // 가는날 달력 설정
 	departurePicker = flatpickr("#departDate", {
 	    dateFormat: "Y-m-d",
-	    minDate: "today", // 오늘부터 선택 가능
+	    minDate: "today", 
 	    locale: "ko",
+        // [삼항 연산자 적용] 세션 데이터가 있으면 그 날짜를 기본값으로, 없으면 null
+        defaultDate: savedDepDate ? savedDepDate : null, 
 	    onChange: function(selectedDates) {
             if (selectedDates.length > 0) {
             	const nextDay = new Date(selectedDates[0]);
@@ -602,13 +620,12 @@ function dateChange(){
 
                 const arrDate = arrivalPicker.selectedDates[0];
                 
-                // [+] 기호를 붙이면 날짜가 숫자로 변환되어 '이전/당일' 비교가 정확해집니다.
                 if (arrDate && +arrDate < +nextDay) {
                     showToast('오는날은 가는날 이후여야 합니다.', 'error');
                 	arrivalPicker.clear();
                     arrivalPicker.open();
                 }
-                arrivalPicker.set("minDate", nextDay);	// set 작업이 무거움 그래서 미뤄나야지 적용이 된다
+                arrivalPicker.set("minDate", nextDay);	
             }
         }
 	});

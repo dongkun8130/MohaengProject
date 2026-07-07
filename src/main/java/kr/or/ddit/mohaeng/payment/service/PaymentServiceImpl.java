@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -71,14 +72,19 @@ public class PaymentServiceImpl implements IPaymentService {
         this.placeApiController = placeApiController;
     }
 
+    
+    @Value("${toss.api.base}")
+    private String url;
+    
+    @Value("${toss.api.key}")
+    private String widgetSecretKey;
+    
 	@Override
 	@Transactional
 	public Map<String, Object> confirmPayment(PaymentVO paymentVO) {
 		log.info("PaymentServiceImpl - confirmPayment {}", paymentVO);
 
 		// api - 요청
-		String url = "https://api.tosspayments.com/v1/payments/confirm"; // 요청 주소
-		String widgetSecretKey = "test_gsk_docs_OaPz8L5KdmQXkzRz3y47BMw6"; // 요청 키
 		byte[] encodedBytes = Base64.getEncoder().encode((widgetSecretKey + ":").getBytes(StandardCharsets.UTF_8));
 		String authorizations = "Basic " + new String(encodedBytes); // 암호화된 키를 이용해서 권한 설정
 

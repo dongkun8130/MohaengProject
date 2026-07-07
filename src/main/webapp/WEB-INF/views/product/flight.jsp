@@ -256,28 +256,48 @@ function restoreSearchForm() {
 }
 
 // 검색 타입 탭 전환
-document.querySelectorAll('.search-tab').forEach(tab => {
-    tab.addEventListener('click', function() {
-        document.querySelectorAll('.search-tab').forEach(t => t.classList.remove('active'));
+document.querySelectorAll('.sort-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        // 1. 버튼 활성화 클래스 토글
+        document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
         this.classList.add('active');
-
-        const type = this.dataset.type;
-        currentSearchType = type;
- 
-//         resetFlightSelection();
-		
-        if (type === 'oneway') {
-            document.getElementById('returnDateGroup').style.display = 'none';
-            totalSegments = 1;
-        } else {
-            document.getElementById('returnDateGroup').style.display = 'block';
-            totalSegments = 2;
-        }
-
-        updateFlightButtons();				// 버튼 텍스트 업데이트
-        updateSelectionStepIndicator(); 	// 선택 단계 표시 업데이트
+        
+        // 2. [핵심] 서버 호출 없이, 이미 가지고 있는 데이터를 정렬하고 화면만 다시 그리기
+        sortAndRenderFlights(this.dataset.sort); 
     });
 });
+
+// 정렬 버튼 누를시 데이터 변경
+function sortAndRenderFlights(sortBy) {
+    if (!flightFullData || flightFullData.length === 0) return;
+
+    // 1. 정렬 기준(sortBy)에 따라 기존 배열을 메모리 상에서 정렬
+    if (sortBy === "price") {
+        flightFullData.sort((a, b) => a.economyCharge - b.economyCharge);
+    } else if (sortBy === "duration") {
+        flightFullData.sort((a, b) => {
+            const durationA = durationFormmater(a.depTime, a.arrTime, "duration");
+            const durationB = durationFormmater(b.depTime, b.arrTime, "duration");
+            return durationA - durationB;
+        });
+    } else {
+        // 기본 정렬 (출발 시간순 등 기본값 필터가 필요하다면 여기에 작성)
+        flightFullData.sort((a, b) => a.depTime.localeCompare(b.depTime));
+    }
+
+    // 2. 화면에 그려져 있던 기존 항공권 카드 리스트 깔끔히 청소
+    result.innerHTML = ``;
+    
+    // 3. 인피니티 스크롤 상태 초기화 후 첫 10개 다시 그리기
+    flightCurrentPage = 1;
+    flightHasMore = flightFullData.length > flightItemsPerPage;
+    
+    renderFlightBatch(); // 정렬된 데이터로 첫 배치(10개) 출력
+    
+    // 4. 스크롤을 리스트 최상단으로 부드럽게 올려주면 UX가 훨씬 좋아집니다.
+    document.getElementById('flightResults')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
 
 // 버튼 텍스트 업데이트
 function updateFlightButtons() {
@@ -467,15 +487,15 @@ function initFlightInfiniteScroll() {
     	if (entries[0].isIntersecting && !flightIsLoading && flightHasMore) {
             flightIsLoading = true;
 
-            setTimeout(() => {
-                flightCurrentPage++;
-                renderFlightBatch(); // 10개씩 그리는 함수 호출
-                console.log("flightIsLoading : ", flightIsLoading);
-            }, 1000);
+            flightCurrentPage++;
+            renderFlightBatch(); // 10개씩 그리는 함수 호출
+            console.log("flightIsLoading : ", flightIsLoading);
+
         }
     }, {
         root: null,
-        rootMargin: '100px', // 보이기 100px 전에 미리 호출하여 부드러운 연결
+     	// 하단 도달 200px 전에 미리 감지해서 다음 데이터를 불러오므로 멈춤 현상이 사라짐
+        rootMargin: '200px', 
         threshold: 0
     });
 
@@ -498,9 +518,9 @@ function renderFlightBatch(){
         html += createFlightCard(item, currentSearchData, cabin, start + i);
     });
     
-    result.insertAdjacentHTML('beforeend', html);
-    setTimeout(() => { flightIsLoading = false }, 2000);
-    
+    result.insertAdjacentHTML('beforeend', html); 
+	// 사용자가 스크롤을 확 내렸을 때 로더가 스치듯 보이게 만듭니다.
+	setTimeout(() => { flightIsLoading = false }, 750);
     
     if (end >= flightFullData.length) {
         flightHasMore = false;
@@ -754,7 +774,7 @@ function searchFlights() {
     	// 가격 없는것, 항공편명 없는것, 이미 출발할 항공권 필터
     	const filteredFlight = flight.filter(item => 
             item.airlineNm && item.airlineNm !== '/' && timeCheck(item.depTime) && (item.economyCharge !== 0)
-        );
+    	);
     	
     	// 필터 된 데이터 없을시 출력할 메시지
     	if (filteredFlight.length === 0) {

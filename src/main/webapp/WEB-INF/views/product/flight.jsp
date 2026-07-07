@@ -209,32 +209,50 @@ function restoreSearchForm() {
     if (!saved) return;
 
     const data = JSON.parse(saved);
-    currentSearchState = data.flights[0]; // 상태 복원
-
-
-    // [테스트 1] 세션에서 갓 꺼낸 데이터의 연도 확인 (여기서는 2026이 나올 겁니다)
-    console.log("오리지널 startDt: ", currentSearchState.startDt);
+    console.log("data : ", data);
     
+    currentSearchState = data.flights[0]; // 상태 복원
     console.log("복원 코드 : ", currentSearchState);
-//     // UI 필드 복원
+    
+    
+    currentSearchType = data.tripType || 'round';
+    totalSegments = data.totalSegments || 2;
+    
+    document.querySelectorAll('.search-tab').forEach(t => {
+        t.classList.toggle('active', t.dataset.type === currentSearchType);
+    });
+    document.getElementById('returnDateGroup').style.display = (currentSearchType === 'oneway') ? 'none' : 'block';
+
+    // 2. 단계(Step) 결정 및 선택 목록 전역 변수 복원
+    if (currentSearchType === 'round' && data.flights.length === 1) {
+        currentSelectionStep = 1;
+        selectedFlights[0] = data.flights[0]; 
+        updateSelectedFlightsDisplay();       
+    } else {
+        // 처음 검색 폼을 복원하는 단계라면 스텝을 0으로 굳혀야 여정이 꼬이지 않습니다.
+        currentSelectionStep = 0;
+        selectedFlights = [];
+    }
+    
+	// UI 필드 복원
     document.querySelector('#departure').value = currentSearchState.depAirportNm;
     document.querySelector('#depAirportId').value = currentSearchState.depAirportId;
     document.querySelector('#depIataCode').value = currentSearchState.depIata;
     document.querySelector('#destination').value = currentSearchState.arrAirportNm;
     document.querySelector('#arrAirportId').value = currentSearchState.arrAirportId;
     document.querySelector('#arrIataCode').value = currentSearchState.arrIata;
-//     document.querySelector('#departDate').value = currentSearchState.startDt;
-//     document.querySelector('#returnDate').value = data.flights[1].startDt;
+   
+    updateFlightButtons();				// 버튼 텍스트 업데이트
+    updateSelectionStepIndicator(); 	// 선택 단계 표시 업데이트
     
-//     // 선택한 항목 보여줘야됨
-//     // update로 그것도 보여줘야됨 (오는 편) 그래야지 가능
     
-    currentSelectionStep = 1;
+    if (departurePicker && departurePicker.selectedDates.length > 0) {
+        const restoreDepDate = new Date(departurePicker.selectedDates[0]);
+        restoreDepDate.setDate(restoreDepDate.getDate() + 1); // 가는날 다음날 계산
+        
+        arrivalPicker.set("minDate", restoreDepDate); // 오는날 달력의 하한선을 강제 업데이트!
+    }
     
-//     // 복원 후 즉시 검색 실행 (선택 사항)
-    searchFlights();
-// 아직 좀 조정해야됨
-
 }
 
 // 검색 타입 탭 전환
@@ -245,7 +263,7 @@ document.querySelectorAll('.search-tab').forEach(tab => {
 
         const type = this.dataset.type;
         currentSearchType = type;
-        // 탭 전환시에는 어떻게 할까??
+ 
 //         resetFlightSelection();
 		
         if (type === 'oneway') {
@@ -594,16 +612,28 @@ function dateChange(){
     const savedData = savedProduct ? JSON.parse(savedProduct) : null;
     
     // 2. 가는날, 오는날 데이터가 있는지 확인하고 YYYY-MM-DD 포맷으로 가공
-    const savedDepDate = savedData && savedData.flights[0] ? savedData.flights[0].startDt.replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3') : null;
-    const savedArrDate = savedData && savedData.flights[1] ? savedData.flights[1].startDt.replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3') : null;
+    const savedDepDate = savedData?.flights?.[0]?.startDt?.replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3') || null;
+    let savedArrDate = savedData?.flights?.[1]?.startDt?.replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3') || null;
 
+    // 오는날이 가는날보다 같거나 빠르면 데이터 무효화
+    if (savedDepDate && savedArrDate && new Date(savedArrDate) <= new Date(savedDepDate)) {
+        savedArrDate = null; 
+    }
+    
+ 	// 초기 minDate 설정: 가는날 복원 데이터가 있으면 '가는날+1일', 없으면 '오늘'
+    let initialMinArrival = "today";
+    if (savedDepDate) {
+        const nextDay = new Date(savedDepDate);
+        nextDay.setDate(nextDay.getDate() + 1);
+        initialMinArrival = nextDay;
+    }
+    
     // 오는날 달력 설정
 	arrivalPicker = flatpickr("#returnDate", {
 		dateFormat: "Y-m-d",
         minDate: "today",
         locale: "ko",
-        // [삼항 연산자 적용] 세션 데이터가 있으면 그 날짜를 기본값으로, 없으면 null
-        defaultDate: savedArrDate ? savedArrDate : null 
+        defaultDate: savedArrDate 
 	});
 	
     // 가는날 달력 설정
@@ -611,18 +641,15 @@ function dateChange(){
 	    dateFormat: "Y-m-d",
 	    minDate: "today", 
 	    locale: "ko",
-        // [삼항 연산자 적용] 세션 데이터가 있으면 그 날짜를 기본값으로, 없으면 null
-        defaultDate: savedDepDate ? savedDepDate : null, 
+        defaultDate: savedDepDate, 
 	    onChange: function(selectedDates) {
             if (selectedDates.length > 0) {
             	const nextDay = new Date(selectedDates[0]);
                 nextDay.setDate(nextDay.getDate() + 1);
-
-                const arrDate = arrivalPicker.selectedDates[0];
                 
-                if (arrDate && +arrDate < +nextDay) {
+                if (arrivalPicker.selectedDates[0] && +arrivalPicker.selectedDates[0] < +nextDay) {
                     showToast('오는날은 가는날 이후여야 합니다.', 'error');
-                	arrivalPicker.clear();
+                    arrivalPicker.clear();
                     arrivalPicker.open();
                 }
                 arrivalPicker.set("minDate", nextDay);	
@@ -853,6 +880,7 @@ function createAutocompleteItemHtml(location, query) {
 			    	<div class="autocomplete-item-sub">\${location.cityName}</div>
 		    	</div>
 	    	</div>`;
+
 }
 
 function renderStoredData(storedData) {
@@ -862,36 +890,34 @@ function renderStoredData(storedData) {
 document.addEventListener('DOMContentLoaded', function() {
 
 	airportList = JSON.parse('${airportList}');	// 공항 목록 받은 것
+    loader = document.querySelector("#flightScrollLoader");	// 인피니티 스크롤 객체
+    initFlightInfiniteScroll();
+	
+    const autoInputs = document.querySelectorAll('.airport-autocomplete');
+    autoInputs.forEach(input => {
+        const dropdown = input.nextElementSibling; // 바로 뒤에 있는 .autocomplete-dropdown
+
+        // 1. 글자를 입력할 때 실행
+        input.addEventListener('input', function() {
+            showSegmentAutocomplete(dropdown, this.value.trim());
+        });
+
+        // 2. 입력창을 클릭(포커스)했을 때 실행
+        input.addEventListener('focus', function() {
+            showSegmentAutocomplete(dropdown, this.value.trim());
+        });
+    });
     
-    restoreSearchForm();
-    
+	// 정렬
     document.querySelectorAll('.sort-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
             this.classList.add('active');
         });
     });
-    loader = document.querySelector("#flightScrollLoader");	// 인피니티 스크롤 객체
-    initFlightInfiniteScroll();
-    const autoInputs = document.querySelectorAll('.airport-autocomplete');
-    
-    autoInputs.forEach(input => {
-        const dropdown = input.nextElementSibling; // 바로 뒤에 있는 .autocomplete-dropdown
-
-        // 1. 글자를 입력할 때 실행
-        input.addEventListener('input', function() {
-            const query = this.value.trim(); 
-            showSegmentAutocomplete(dropdown, query);
-        });
-
-        // 2. 입력창을 클릭(포커스)했을 때 실행
-        input.addEventListener('focus', function() {
-            const query = this.value.trim();
-            showSegmentAutocomplete(dropdown, query);
-        });
-    });
     
     dateChange();	// 달력 설정
+    restoreSearchForm();
 });
 </script>
 

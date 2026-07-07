@@ -107,7 +107,6 @@ public class FlightServiceImpl implements IFlightService {
 					vo.setDepAirportId(flightProduct.getDepAirportId());
 					vo.setArrAirportId(flightProduct.getArrAirportId());
 
-					// 여기서 호출해서 좌석 개수 가져오기?
 					log.info("vo.setDepTime : {}", vo.getDepTime());
 					log.info("vo.setArrTime : {}", vo.getArrTime());
 					List<String> seatList = flightMapper.getFlightSeat(vo);
@@ -208,9 +207,9 @@ public class FlightServiceImpl implements IFlightService {
 				+ "&_type=json";
 
 		// 공항정보 - vo에 있는 정보와 매칭하는 것
-		RestTemplate restTemplate = new RestTemplate(); // 편하게 json끌어오기 가능
+		RestTemplate restTemplate = new RestTemplate(); // json끌어오기 
 
-		// response -> body -> items 구조여서
+		// response -> body -> items 
 		Map<String, Object> response = restTemplate.getForObject(url, Map.class);
 		Map<String, Object> res = (Map<String, Object>) response.get("response");
 		Map<String, Object> body = (Map<String, Object>) res.get("body");
@@ -240,7 +239,7 @@ public class FlightServiceImpl implements IFlightService {
 
 		RestTemplate restTemplate = new RestTemplate();
 
-		// response -> body -> items 구조여서
+		// response -> body -> items 구조
 		Map<String, Object> response = restTemplate.getForObject(url, Map.class);
 		Map<String, Object> res = (Map<String, Object>) response.get("response");
 		Map<String, Object> body = (Map<String, Object>) res.get("body");

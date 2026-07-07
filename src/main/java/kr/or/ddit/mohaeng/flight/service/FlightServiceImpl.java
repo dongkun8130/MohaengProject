@@ -9,6 +9,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
@@ -32,8 +33,12 @@ public class FlightServiceImpl implements IFlightService {
 	private IFlightMapper flightMapper;
 
 	// api 서비스키
-	public static final String serviceKey = "a7bc76e60824b232ff8273a1191a079f36c11cee6fdbe0be73f54b73d5c510f9";
+	@Value("${flight.api.key}")
+	private String serviceKey;
 
+	@Value("${flight.api.base}")
+	private String baseUrl;
+	
 	@Override
 	public List<AirportVO> getAirportList() {
 		return flightMapper.getAirportList();
@@ -49,7 +54,6 @@ public class FlightServiceImpl implements IFlightService {
 		List<FlightProductVO> flightProductList = new ArrayList<>();
 
 		try {
-			String baseUrl = "http://apis.data.go.kr/1613000/DmstcFlightNvgInfo/GetFlightOpratInfoList";
 
 			StringBuilder urlBuilder = new StringBuilder(baseUrl);
 			urlBuilder.append("?serviceKey=" + serviceKey);

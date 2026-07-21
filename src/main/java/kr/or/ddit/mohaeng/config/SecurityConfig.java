@@ -251,51 +251,51 @@ public class SecurityConfig {
         .httpBasic(hbasic -> hbasic.disable());
 	    http.headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()));
 
-    http.exceptionHandling(exception ->
-        exception.accessDeniedHandler(new CustomAccessDeniedHandler())
-    );
+	    http.exceptionHandling(exception ->
+	        exception.accessDeniedHandler(new CustomAccessDeniedHandler())
+	    );
+	
+	    http.sessionManagement(session ->
+	        session.maximumSessions(1)
+	    );
+	
+	    // google 로그인
+	    http
+	    .oauth2Login(oauth2 -> oauth2
+	        .loginPage("/member/login")
+	        .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
+	        .successHandler((request, response, authentication) -> {
+	            response.sendRedirect("/");
+	        })
+	    );
+	
+	    // 로그인 상태 유지
+	    http.rememberMe(remember -> remember
+	    		.key("mohaengKey") 								// 쿠키 암호화 키 (원하는 문자열)
+	    		.tokenRepository(persistentTokenRepository()) 	// DB 저장소 설정
+	    		.userDetailsService(customUserDetailsService) 	// 인증 유저 확인 서비스
+	    		.tokenValiditySeconds(604800) 					// 쿠키 유효기간 (7일: 60*60*24*7)
+	    		.rememberMeServices(rememberMeServices())
+	    );
+	
+	    http.logout(logout ->
+	        logout.logoutUrl("/logout")
+	              .logoutRequestMatcher(new AntPathRequestMatcher("/member/logout", "GET")) // GET 방식 허용 추가
+	              .addLogoutHandler((request, response, authentication) -> {
+	                  log.info("로그아웃 핸들러 진입!");
+	                  if (authentication != null) {
+	                      log.info("로그아웃 유저명: " + authentication.getName());
+	                      persistentTokenRepository().removeUserTokens(authentication.getName());
+	                  }
+	              })
+				.invalidateHttpSession(true)           		// 세션 무효화
+				.deleteCookies("JSESSIONID", "remember-me")	// 세션 쿠키와 자동로그인 쿠키 모두 삭제
+				.clearAuthentication(true)
+				.logoutSuccessUrl("/member/login")
+	    );
 
-    http.sessionManagement(session ->
-        session.maximumSessions(1)
-    );
 
-    // google 로그인
-    http
-    .oauth2Login(oauth2 -> oauth2
-        .loginPage("/member/login")
-        .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
-        .successHandler((request, response, authentication) -> {
-            response.sendRedirect("/");
-        })
-    );
-
-    // 로그인 상태 유지
-    http.rememberMe(remember -> remember
-    		.key("mohaengKey") 								// 쿠키 암호화 키 (원하는 문자열)
-    		.tokenRepository(persistentTokenRepository()) 	// DB 저장소 설정
-    		.userDetailsService(customUserDetailsService) 	// 인증 유저 확인 서비스
-    		.tokenValiditySeconds(604800) 					// 쿠키 유효기간 (7일: 60*60*24*7)
-    		.rememberMeServices(rememberMeServices())
-    );
-
-    http.logout(logout ->
-        logout.logoutUrl("/logout")
-              .logoutRequestMatcher(new AntPathRequestMatcher("/member/logout", "GET")) // GET 방식 허용 추가
-              .addLogoutHandler((request, response, authentication) -> {
-                  log.info("로그아웃 핸들러 진입!");
-                  if (authentication != null) {
-                      log.info("로그아웃 유저명: " + authentication.getName());
-                      persistentTokenRepository().removeUserTokens(authentication.getName());
-                  }
-              })
-			.invalidateHttpSession(true)           		// 세션 무효화
-			.deleteCookies("JSESSIONID", "remember-me")	// 세션 쿠키와 자동로그인 쿠키 모두 삭제
-			.clearAuthentication(true)
-			.logoutSuccessUrl("/member/login")
-    );
-
-
-    return http.build();
+	    return http.build();
 	}
 
 	@Bean
@@ -328,7 +328,7 @@ public class SecurityConfig {
 		return new BCryptPasswordEncoder();
 	}
 
-	// DB 저장소
+	// DB 저장소 
 	@Bean
 	protected PersistentTokenRepository persistentTokenRepository() {
 		log.info("Remember-Me DB 저장소 빈 생성 시작");

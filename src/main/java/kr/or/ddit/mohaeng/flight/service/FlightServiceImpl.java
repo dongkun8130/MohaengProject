@@ -79,6 +79,9 @@ public class FlightServiceImpl implements IFlightService {
 			JsonNode root = objectMapper.readTree(jsonResponse);
 			JsonNode items = root.path("response").path("body").path("items").path("item");
 
+			// 비즈니스 이코노미 분기
+			int limit = flightProduct.getCabin().equals("economy") ? 102 : 18;
+			
 			if (items.isArray()) {
 				for (JsonNode node : items) {
 					FlightProductVO vo = new FlightProductVO();
@@ -115,12 +118,11 @@ public class FlightServiceImpl implements IFlightService {
 					log.info("vo.setArrTime : {}", vo.getArrTime());
 					List<String> seatList = flightMapper.getFlightSeat(vo);
 //			        log.info("getFlightSeat 실행후 seatList : {}", seatList);
-					if (flightProduct.getCabin().equals("economy") && seatList.size() >= 102)
-						continue;
-					if (flightProduct.getCabin().equals("business") && seatList.size() >= 18)
-						continue;
+					
+					if (seatList.size() < limit) {
+						flightProductList.add(vo);
+					}
 
-					flightProductList.add(vo);
 				}
 			} else if (items.isObject()) {
 				FlightProductVO vo = new FlightProductVO();
@@ -149,7 +151,15 @@ public class FlightServiceImpl implements IFlightService {
 					vo.setAirlineId(airlineVO.getAirlineId());
 				}
 
-				flightProductList.add(vo);
+				vo.setDepAirportId(flightProduct.getDepAirportId());
+				vo.setArrAirportId(flightProduct.getArrAirportId());
+				
+				List<String> seatList = flightMapper.getFlightSeat(vo);
+				
+				if(seatList.size() < limit) {
+					flightProductList.add(vo);
+				}
+				
 			}
 
 		} catch (JsonProcessingException e) {
@@ -160,10 +170,7 @@ public class FlightServiceImpl implements IFlightService {
 	}
 
 	/**
-	 * <p>
-	 * 시간데이터 포맷 설정
-	 * </p>
-	 * 
+	 * <p>시간데이터 포맷 설정</p>
 	 * @author sdg
 	 * @param vo      데이터 설정할 객체
 	 * @param rawTime api의 시간 문자열
@@ -186,6 +193,9 @@ public class FlightServiceImpl implements IFlightService {
 		}
 	}
 
+	
+	
+	
 	@Override
 	public MemberVO getPayPerson(String memId) {
 		MemberVO result = flightMapper.getPayPerson(memId);

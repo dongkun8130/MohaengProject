@@ -328,7 +328,7 @@ public class SecurityConfig {
 		return new BCryptPasswordEncoder();
 	}
 
-	// DB 저장소
+	// DB 저장소 
 	@Bean
 	protected PersistentTokenRepository persistentTokenRepository() {
 		log.info("Remember-Me DB 저장소 빈 생성 시작");

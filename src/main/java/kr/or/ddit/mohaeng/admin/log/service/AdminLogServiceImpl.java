@@ -28,8 +28,6 @@ public class AdminLogServiceImpl implements IAdminLogService {
         List<SystemLogVO> dataList = adminLogMapper.getSystemLogList(pagInfoVO);
         log.info("dataList : {}", dataList);
         
-        // 카운트 변수 지정해줘야됨
-        
         pagInfoVO.setDataList(dataList);
 	}
 	

@@ -40,6 +40,7 @@ public class AdminLogController {
 	 * @param currentPage
 	 * @param searchWord
 	 * @param searchType
+	 * @param levelFilter
 	 * @return
 	 */
 	@GetMapping
@@ -65,7 +66,7 @@ public class AdminLogController {
 		}
 		
 		if (!"all".equals(levelFilter)) {
-	        pagInfoVO.setLevelFilter(levelFilter);   // ← 추가
+	        pagInfoVO.setLevelFilter(levelFilter);
 	    }
 		
 		adminLogService.getSystemLogList(pagInfoVO);

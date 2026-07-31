@@ -40,6 +40,7 @@ public class AdminLogController {
 	 * @param currentPage
 	 * @param searchWord
 	 * @param searchType
+	 * @param levelFilter
 	 * @return
 	 */
 	@GetMapping
@@ -47,6 +48,7 @@ public class AdminLogController {
 			@RequestParam(defaultValue = "1") int currentPage
 			,@RequestParam(defaultValue = "") String searchWord
 			,@RequestParam(defaultValue = "all") String searchType
+			,@RequestParam(defaultValue = "all") String levelFilter
 			,@RequestParam(required = false) String startDate
 	        ,@RequestParam(required = false) String endDate
 			) {
@@ -62,7 +64,23 @@ public class AdminLogController {
 		if (!"all".equals(searchType)) {
 			pagInfoVO.setSearchType(searchType);	// 검색타입. 
 		}
+		
+		if (!"all".equals(levelFilter)) {
+	        pagInfoVO.setLevelFilter(levelFilter);
+	    }
+		
 		adminLogService.getSystemLogList(pagInfoVO);
 		return ResponseEntity.ok(pagInfoVO);
 	}
+	
+	
+	@GetMapping("/stats")
+	public ResponseEntity<Map<String, Object>> getStats(
+	        @RequestParam String startDate, @RequestParam String endDate) {
+	    PaginationInfoVO<SystemLogVO> vo = new PaginationInfoVO<>();
+	    vo.setStartDate(startDate);
+	    vo.setEndDate(endDate);
+	    return ResponseEntity.ok(adminLogService.getSystemLogStats(vo));
+	}
+	
 }

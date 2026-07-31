@@ -1,10 +1,10 @@
 package kr.or.ddit.mohaeng.admin.log.mapper;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
-import kr.or.ddit.mohaeng.tour.vo.TripProdVO;
 import kr.or.ddit.mohaeng.vo.PaginationInfoVO;
 import kr.or.ddit.mohaeng.vo.SystemLogVO;
 
@@ -30,4 +30,6 @@ public interface IAdminLogMapper {
 	 */
 	public List<SystemLogVO> getSystemLogList(PaginationInfoVO<SystemLogVO> pagInfoVO);
 	
+	
+	public Map<String, Object> getSystemLogStats(PaginationInfoVO<SystemLogVO> pagInfoVO);
 }

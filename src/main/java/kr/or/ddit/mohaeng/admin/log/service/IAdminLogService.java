@@ -1,5 +1,7 @@
 package kr.or.ddit.mohaeng.admin.log.service;
 
+import java.util.Map;
+
 import kr.or.ddit.mohaeng.vo.PaginationInfoVO;
 import kr.or.ddit.mohaeng.vo.SystemLogVO;
 
@@ -13,4 +15,6 @@ public interface IAdminLogService {
 	 */
 	public void getSystemLogList(PaginationInfoVO<SystemLogVO> pagInfoVO);
 
+	
+	public Map<String, Object> getSystemLogStats(PaginationInfoVO<SystemLogVO> pagInfoVO);
 }

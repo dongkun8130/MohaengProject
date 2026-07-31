@@ -34,13 +34,7 @@
 	    </where>
     </select>
     
-<!--     
-	<select id="getSystemLogCount" parameterType="kr.or.ddit.mohaeng.vo.PaginationInfoVO" resultType="int">
-        SELECT COUNT(*)
-        FROM SYSTEM_LOG
-    </select> -->
     
-    <!-- 검색은 다시 -->
     <!-- 로그 목록 조회-->
     <select id="getSystemLogList" parameterType="kr.or.ddit.mohaeng.vo.PaginationInfoVO" resultType="kr.or.ddit.mohaeng.vo.SystemLogVO">
     	SELECT SYSTEM_LOG_NO, "LEVEL", SOURCE, MSG, IP, REG_DT, SYSTEM_LOG_MEM
@@ -85,64 +79,7 @@
 	        <![CDATA[
 		    WHERE RNUM >= #{startRow}
 		    ]]>
-    	
-    
-    
     </select>
-<!--         SELECT SYSTEM_LOG_NO, "LEVEL", SOURCE, MSG, IP, REG_DT, SYSTEM_LOG_MEM
-	    FROM (
-	        SELECT ROWNUM RNUM, TT.*
-	        FROM (
-	            SELECT
-	                SYSTEM_LOG_NO
-	                , "LEVEL"
-	                , SOURCE
-	                , MSG, IP
-	                , REG_DT
-	                , SYSTEM_LOG_MEM
-	            FROM SYSTEM_LOG
-	            WHERE REG_DT BETWEEN TO_DATE(#{startDate} || ' 00:00:00', 'YYYY-MM-DD HH24:MI:SS')
-	                             AND TO_DATE(#{endDate} || ' 23:59:59', 'YYYY-MM-DD HH24:MI:SS')
-	            <if test="searchWord != null and searchWord != ''">
-	                AND (MSG LIKE '%' || #{searchWord} || '%' OR SOURCE LIKE '%' || #{searchWord} || '%')
-	            </if>
-	            ORDER BY REG_DT DESC, SYSTEM_LOG_NO DESC
-	        ) TT
-	        <![CDATA[
-	        WHERE ROWNUM <= #{endRow}
-	        ]]>
-	    )
-        <![CDATA[
-	    WHERE RNUM >= #{startRow}
-	    ]]>
-    <select id="getSystemLogList" parameterType="kr.or.ddit.mohaeng.vo.PaginationInfoVO" resultType="kr.or.ddit.mohaeng.vo.SystemLogVO">
-        SELECT *
-        FROM (
-            SELECT a.*
-            FROM (
-                SELECT
-	                SYSTEM_LOG_NO
-					, "LEVEL"
-					, SOURCE
-					, MSG
-					, IP
-					, REG_DT
-					, SYSTEM_LOG_MEM
-                FROM SYSTEM_LOG
-                WHERE REG_DT BETWEEN TO_DATE(#{startDate} || ' 00:00:00', 'YYYY-MM-DD HH24:MI:SS')
-                     AND TO_DATE(#{endDate} || ' 23:59:59', 'YYYY-MM-DD HH24:MI:SS')
-                ORDER BY REG_DT DESC, SYSTEM_LOG_NO DESC
-            ) a
-        )
-    </select> -->
-    
-<!--             <![CDATA[ -->
-<!--             WHERE ROWNUM <= #{currentPage} * #{screenSize} -->
-<!--             ]]> -->
-<!--         <![CDATA[ -->
-<!--         WHERE rn > (#{currentPage} - 1) * #{screenSize} -->
-<!--         ]]> -->
-    
     
     <!-- 전체 개수, 그런거 알아오기 -->
     <select id="getSystemLogStats" parameterType="kr.or.ddit.mohaeng.vo.PaginationInfoVO" resultType="map">
@@ -181,56 +118,4 @@
     
 	</select>
 	
-<!--     <select id="getSystemLogStats" parameterType="kr.or.ddit.mohaeng.vo.PaginationInfoVO" resultType="map">
-    	SELECT 
-	        COUNT(*) AS TOTAL
-	        , COUNT(CASE WHEN CATEGORY = 'auth'     THEN 1 END) AS auth
-	        , COUNT(CASE WHEN CATEGORY = 'payment'  THEN 1 END) AS payment
-	        , COUNT(CASE WHEN CATEGORY = 'booking'  THEN 1 END) AS booking
-	        , COUNT(CASE WHEN CATEGORY = 'product'  THEN 1 END) AS product
-	        , COUNT(CASE WHEN CATEGORY = 'security' THEN 1 END) AS security
-	        , COUNT(CASE WHEN CATEGORY = 'system'   THEN 1 END) AS system
-	        
-	        , COUNT(CASE WHEN "LEVEL" = 'INFO' THEN 1 END) AS LEVEL_INFO
-	        , COUNT(CASE WHEN "LEVEL" = 'WARN' THEN 1 END) AS LEVEL_WARN
-	        , COUNT(CASE WHEN "LEVEL" = 'ERROR' THEN 1 END) AS LEVEL_ERROR
-	    FROM (
-	        SELECT
-	            "LEVEL"
-	            , SOURCE
-	            , CASE
-	                WHEN LOWER(MSG) LIKE '%login%' OR MSG LIKE '%인증%' OR MSG LIKE '%로그인%' THEN 'auth'
-	                WHEN LOWER(MSG) LIKE '%pay%'   OR MSG LIKE '%결제%' THEN 'payment'
-	                WHEN LOWER(MSG) LIKE '%book%'  OR MSG LIKE '%예약%' THEN 'booking'
-	                WHEN LOWER(MSG) LIKE '%product%' OR LOWER(MSG) LIKE '%accommodation%'
-	                  OR LOWER(MSG) LIKE '%flight%'  OR LOWER(MSG) LIKE '%tour%' THEN 'product'
-	                WHEN LOWER(MSG) LIKE '%security%' OR MSG LIKE '%보안%' OR MSG LIKE '%접근%' THEN 'security'
-	                ELSE 'system'
-	            END AS CATEGORY
-	        FROM SYSTEM_LOG
-	        WHERE REG_DT BETWEEN TO_DATE(#{startDate} || ' 00:00:00', 'YYYY-MM-DD HH24:MI:SS')
-	                          AND TO_DATE(#{endDate} || ' 23:59:59', 'YYYY-MM-DD HH24:MI:SS')
-	        <if test="searchWord != null and searchWord != ''">
-	            AND (MSG LIKE '%' || #{searchWord} || '%' OR SOURCE LIKE '%' || #{searchWord} || '%')
-	        </if>
-	    )
-	</select> -->
-    
-    
-    <!-- 
-    SELECT 
-	        COUNT(*) AS total
-	        , COUNT(CASE WHEN SOURCE LIKE '%Talk%' OR SOURCE LIKE '%Comment%' THEN 1 END) AS COMMUNITY
-	        , COUNT(CASE WHEN SOURCE LIKE '%Chat%' THEN 1 END) AS CHAT
-	        , COUNT(CASE WHEN SOURCE LIKE '%Login%' THEN 1 END) AS AUTH
-	        , COUNT(CASE WHEN SOURCE LIKE '%Accommodation%' THEN 1 END) AS PRODUCT
-	        
-	        , COUNT(CASE WHEN "LEVEL" = 'INFO' THEN 1 END) AS infoCount
-	        , COUNT(CASE WHEN "LEVEL" = 'WARN' THEN 1 END) AS warnCount
-	        , COUNT(CASE WHEN "LEVEL" = 'ERROR' THEN 1 END) AS errorCount
-	    FROM SYSTEM_LOG
-	    WHERE REG_DT BETWEEN TO_DATE(#{startDate} || ' 00:00:00', 'YYYY-MM-DD HH24:MI:SS')
-                     AND TO_DATE(#{endDate} || ' 23:59:59', 'YYYY-MM-DD HH24:MI:SS')
-    
-     -->
 </mapper>

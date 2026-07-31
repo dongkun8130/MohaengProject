@@ -29,7 +29,8 @@ public class PaginationInfoVO<T>{
     // 추가
     private String startDate;
     private String endDate;
-    
+
+    private String levelFilter;
 
     public PaginationInfoVO() {}
 

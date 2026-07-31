@@ -1,6 +1,7 @@
 package kr.or.ddit.mohaeng.admin.log.mapper;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
@@ -30,4 +31,6 @@ public interface IAdminLogMapper {
 	 */
 	public List<SystemLogVO> getSystemLogList(PaginationInfoVO<SystemLogVO> pagInfoVO);
 	
+	
+	public Map<String, Object> getSystemLogStats(PaginationInfoVO<SystemLogVO> pagInfoVO);
 }

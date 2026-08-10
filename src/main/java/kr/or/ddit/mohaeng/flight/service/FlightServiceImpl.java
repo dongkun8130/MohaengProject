@@ -64,104 +64,36 @@ public class FlightServiceImpl implements IFlightService {
 			urlBuilder.append("&arrAirportId=" + flightProduct.getArrAirportId());
 			urlBuilder.append("&depPlandTime=" + flightProduct.getStartDt().toString().replaceAll("-", ""));
 
-			// 4. RestTemplate 설정
+			
+			// 1. 인코딩 이중 처리 방지
 			RestTemplate restTemplate = new RestTemplate();
 			DefaultUriBuilderFactory factory = new DefaultUriBuilderFactory();
 			factory.setEncodingMode(DefaultUriBuilderFactory.EncodingMode.NONE);
 			restTemplate.setUriTemplateHandler(factory);
 
-			log.info("요청 URL: {}", urlBuilder.toString());
-			String jsonResponse = restTemplate.getForObject(urlBuilder.toString(), String.class);
-			log.info("응답 데이터: {}", jsonResponse);
-
-			// 4. Jackson ObjectMapper를 이용한 파싱
+			
+			// 2. Jackson ObjectMapper를 이용한 파싱
 			ObjectMapper objectMapper = new ObjectMapper();
+			String jsonResponse = restTemplate.getForObject(urlBuilder.toString(), String.class);
 			JsonNode root = objectMapper.readTree(jsonResponse);
 			JsonNode items = root.path("response").path("body").path("items").path("item");
 
 			// 비즈니스 이코노미 분기
 			int limit = flightProduct.getCabin().equals("economy") ? 102 : 18;
 			
+			// 3. 응답 타입(단일 객체/배열)에 관계없이 동일한 파싱 로직 적용
 			if (items.isArray()) {
 				for (JsonNode node : items) {
-					FlightProductVO vo = new FlightProductVO();
-
-					vo.setAirlineNm(node.path("airlineNm").asText()); // 항공사명
-					vo.setFlightSymbol(node.path("vihicleId").asText()); // 편명
-					vo.setEconomyCharge(node.path("economyCharge").asInt());// 요금
-
-					vo.setArrAirportNm(flightProduct.getArrAirportNm());
-					vo.setDepAirportNm(flightProduct.getDepAirportNm());
-
-					if (vo.getAirlineNm().indexOf("대한") != -1 || vo.getAirlineNm().indexOf("아시아나") != -1) {
-						int prestige = (int) (vo.getEconomyCharge() * 1.5);
-						vo.setPrestigeCharge(prestige);
-						vo.setCheckedBaggage(20);
-					} else {
-						vo.setCheckedBaggage(15);
-					}
-					String rawDepTime = node.path("depPlandTime").asText();
-					timeFormatter(vo, rawDepTime, 1);
-
-					String rawArrTime = node.path("arrPlandTime").asText();
-					timeFormatter(vo, rawArrTime, 2);
-
-					AirlineVO airlineVO = flightMapper.selectAirline(vo.getAirlineNm());
-					if (airlineVO != null) {
-						vo.setAirlineId(airlineVO.getAirlineId());
-					}
-
-					vo.setDepAirportId(flightProduct.getDepAirportId());
-					vo.setArrAirportId(flightProduct.getArrAirportId());
-
-					log.info("vo.setDepTime : {}", vo.getDepTime());
-					log.info("vo.setArrTime : {}", vo.getArrTime());
-					List<String> seatList = flightMapper.getFlightSeat(vo);
-//			        log.info("getFlightSeat 실행후 seatList : {}", seatList);
-					
-					if (seatList.size() < limit) {
-						flightProductList.add(vo);
-					}
-
+					parseFlightProduct(node, flightProduct, limit, flightProductList);
 				}
 			} else if (items.isObject()) {
-				FlightProductVO vo = new FlightProductVO();
-
-				vo.setAirlineNm(items.path("airlineNm").asText()); // 항공사명
-				vo.setFlightSymbol(items.path("vihicleId").asText()); // 편명 데이터 없음
-				vo.setEconomyCharge(items.path("economyCharge").asInt()); // 요금
-
-				vo.setArrAirportNm(flightProduct.getArrAirportNm());
-				vo.setDepAirportNm(flightProduct.getDepAirportNm());
-
-				if (vo.getAirlineNm().indexOf("대한") != -1 || vo.getAirlineNm().indexOf("아시아나") != -1) {
-					vo.setCheckedBaggage(20);
-				} else {
-					vo.setCheckedBaggage(15);
-				}
-
-				String rawDepTime = items.path("depPlandTime").asText();
-				timeFormatter(vo, rawDepTime, 1);
-
-				String rawArrTime = items.path("arrPlandTime").asText();
-				timeFormatter(vo, rawArrTime, 2);
-
-				AirlineVO airlineVO = flightMapper.selectAirline(vo.getAirlineNm());
-				if (airlineVO != null) {
-					vo.setAirlineId(airlineVO.getAirlineId());
-				}
-
-				vo.setDepAirportId(flightProduct.getDepAirportId());
-				vo.setArrAirportId(flightProduct.getArrAirportId());
-				
-				List<String> seatList = flightMapper.getFlightSeat(vo);
-				
-				if(seatList.size() < limit) {
-					flightProductList.add(vo);
-				}
-				
+				parseFlightProduct(items, flightProduct, limit, flightProductList);				
 			}
 
+			
+			
+			
+			
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
 		}
@@ -193,6 +125,8 @@ public class FlightServiceImpl implements IFlightService {
 		}
 	}
 
+	
+	
 	
 	
 	
@@ -273,5 +207,43 @@ public class FlightServiceImpl implements IFlightService {
 		}
 		return status;
 	}
+
+	@Override
+	public void parseFlightProduct(JsonNode node, FlightProductVO flightProduct,
+            int limit, List<FlightProductVO> flightProductList) {
+		FlightProductVO vo = new FlightProductVO();
+
+	    vo.setAirlineNm(node.path("airlineNm").asText());       // 항공사명
+	    vo.setFlightSymbol(node.path("vihicleId").asText());    // 편명
+	    vo.setEconomyCharge(node.path("economyCharge").asInt()); // 요금
+
+	    vo.setArrAirportNm(flightProduct.getArrAirportNm());
+	    vo.setDepAirportNm(flightProduct.getDepAirportNm());
+	    vo.setDepAirportId(flightProduct.getDepAirportId());
+	    vo.setArrAirportId(flightProduct.getArrAirportId());
+
+	    if (vo.getAirlineNm().indexOf("대한") != -1 || vo.getAirlineNm().indexOf("아시아나") != -1) {
+	    	int prestige = (int) (vo.getEconomyCharge() * 1.5);
+			vo.setPrestigeCharge(prestige);
+            vo.setCheckedBaggage(20);
+        } else {
+            vo.setCheckedBaggage(15);
+        }
+
+	    timeFormatter(vo, node.path("depPlandTime").asText(), 1);
+	    timeFormatter(vo, node.path("arrPlandTime").asText(), 2);
+
+	    AirlineVO airlineVO = flightMapper.selectAirline(vo.getAirlineNm());
+	    if (airlineVO != null) {
+	        vo.setAirlineId(airlineVO.getAirlineId());
+	    }
+
+	    List<String> seatList = flightMapper.getFlightSeat(vo);
+	    if (seatList.size() < limit) {
+	        flightProductList.add(vo);
+	    }
+	    
+	}
+
 
 }

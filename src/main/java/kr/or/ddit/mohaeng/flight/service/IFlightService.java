@@ -2,6 +2,8 @@ package kr.or.ddit.mohaeng.flight.service;
 
 import java.util.List;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import kr.or.ddit.mohaeng.vo.AirlineVO;
 import kr.or.ddit.mohaeng.vo.AirportVO;
 import kr.or.ddit.mohaeng.vo.FlightProductVO;
@@ -61,4 +63,9 @@ public interface IFlightService {
 	 * @return 좌석정보
 	 */
 	public List<String> getFlightSeat(FlightProductVO flightProductVO); 
+	
+	
+	
+	public void parseFlightProduct(JsonNode node, FlightProductVO flightProduct,
+            int limit, List<FlightProductVO> flightProductList);
 }

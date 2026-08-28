@@ -75,11 +75,8 @@ React Repository
 - MyBatis
 
 ### Frontend
-- JSP, JavaScript, jQuery, AJAX, HTML5/CSS3, Bootstrap (일반/기업회원용, 본 저장소)
-- React, Axios (관리자용, 별도 저장소)
-
-> **AJAX**: JSP 기반 화면에서 비동기 HTTP 요청을 처리하는 데 사용
-> **Axios**: React 관리자 페이지에서 Backend API와 통신하기 위한 HTTP Client
+- JSP, JavaScript, jQuery, AJAX, HTML5/CSS3, Bootstrap
+- React, Axios
 
 ### Database
 - Oracle DB
@@ -111,21 +108,20 @@ React Repository
 
 ```mermaid
 flowchart TD
-    A[React 관리자 페이지<br/>별도 저장소] -->|Axios| A2[JWT]
-    A2 --> C
-    B[JSP 일반/기업회원<br/>본 저장소] -->|AJAX| B2[Session]
-    B2 --> D
-    C[/api/** 필터체인<br/>JWT 인증, CSRF 비활성화/]
-    D[/jsp/** 필터체인<br/>Session 인증, CSRF 유지/]
-    C --> E[Controller]
+    A[React 관리자 페이지<br/>별도 Repository] -->|Axios + JWT| C[/api/**]
+    B[JSP 일반·기업회원<br/>현재 Repository] -->|AJAX + Session + CSRF| D[/jsp/**]
+
+    C --> E[Spring Security]
     D --> E
-    E --> F[Service]
-    F --> G[Mapper - MyBatis]
-    E -.공통 로깅 AOP.-> E
-    G --> H[(Oracle DB)]
-    E --> I[WebSocket / STOMP<br/>실시간 채팅]
-    F --> J[외부 API<br/>TAGO / TourAPI / Toss / reCAPTCHA]
-```
+
+    E --> F[Controller]
+    F --> G[Service]
+    G --> H[Mapper - MyBatis]
+    H --> I[(Oracle DB)]
+
+    F -.-> J[Spring AOP<br/>공통 로깅]
+    G --> K[외부 API<br/>TAGO / TourAPI / Toss / reCAPTCHA]
+    F --> L[WebSocket / STOMP<br/>실시간 채팅]
 
 - `/api/**` : React 관리자 페이지 요청 (Axios로 호출), JWT 인증 필터 적용, CSRF 비활성화
 - `/jsp/**` : JSP 일반/기업회원 요청 (AJAX 사용), 기존 세션 인증 및 CSRF 검증 유지
@@ -167,13 +163,13 @@ flowchart TD
 
 **결과**: 중복 인코딩으로 인한 인증 실패를 해결했고, 응답이 Object/Array 어느 형태로 오더라도 처리할 수 있도록 분기 로직을 구현했습니다.
 
-### 3. MyBatis 동적 SQL 조건 누락 (ORA-00933)
+### 3. MyBatis 동적 SQL 조건 생성 오류 (ORA-00933)
 
-**문제**: 관리자 로그 조회 화면에서 카테고리·레벨 필터를 조합할 때 특정 조합에서 `WHERE` 없이 `AND`만 남는 SQL이 생성되어 `ORA-00933` 오류 발생. 목록 조회와 COUNT 서브쿼리의 필터 조건이 어긋나 페이지 수 계산도 실제 데이터와 불일치.
+**문제**: 관리자 로그 조회 화면에서 각 `<if>` 태그에 `WHERE`를 개별적으로 작성해 필터 조합에 따라 `WHERE`가 중복되거나 조건절이 올바르게 생성되지 않는 문제가 발생.
 
-**해결**: p6spy로 조건 조합별 실행 SQL을 확인해 오류가 재현되는 조합을 특정하고, MyBatis `<where>` 태그로 모든 필터 조건을 통일해 감싸는 방식으로 개선. 목록 조회 쿼리와 COUNT 쿼리의 필터 조건을 일치시킴.
+**해결**: MyBatis `<where>` 태그로 조건절을 통합하고, 각 `<if>` 태그에서는 조건만 생성하도록 수정. 목록 조회와 COUNT 쿼리의 필터 조건도 일치시킴.
 
-**결과**: 카테고리, 레벨, 검색어, 기간 조건을 단독 또는 복합으로 적용해도 SQL 오류 없이 조회되며, 동적 SQL 조건을 일관되게 관리할 수 있도록 구조화했습니다.
+**결과**: 단일·복합 필터에서도 동적 SQL이 일관된 형태로 생성되도록 개선하고, 목록 조회와 COUNT 쿼리의 조건 불일치 문제를 해결.
 
 ### 4. Spring AOP 기반 공통 로깅
 
@@ -187,27 +183,17 @@ flowchart TD
 
 ## 💻 Getting Started
 
-`[확인 필요]` — 빌드 도구(Maven/Gradle), 실행 명령어, 포트 설정 등 실제 정보가 확인되지 않았습니다.
+### Requirements
 
-확인된 실행 환경:
 - JDK 21
+- Maven
 - Apache Tomcat 10.1
 - Oracle DB
 
-### 환경변수
+### Configuration
 
-외부 API 및 데이터베이스 인증 정보는 환경변수로 관리하며, 실제 키 값은 Repository에 포함하지 않습니다.
-
-```properties
-spring.datasource.username=${DB_USERNAME}
-spring.datasource.password=${DB_PASSWORD}
-
-jwt.secret=${JWT_SECRET}
-
-tago.service-key=${TAGO_SERVICE_KEY}
-toss.payment-key=${TOSS_PAYMENT_KEY}
-recaptcha.secret-key=${RECAPTCHA_SECRET_KEY}
-```
+외부 API 및 데이터베이스 인증 정보는 환경변수로 관리합니다.
+실제 인증 정보는 Repository에 포함하지 않습니다.
 
 React(관리자) 프로젝트 실행 방법은 [MohaengReact 저장소](https://github.com/dongkun8130/MohaengReact)를 참고하세요.
 
@@ -231,15 +217,15 @@ React(관리자) 프로젝트 실행 방법은 [MohaengReact 저장소](https://
 
 ## 👨‍👩‍👧‍👦 Team
 
-총 7명이 참여한 팀 프로젝트이며, 모든 팀원이 Frontend와 Backend 개발에 함께 참여하면서 PL, AA, DA, BA, TA 역할을 나누어 협업했습니다.
+총 7명이 참여한 팀 프로젝트입니다. 모든 팀원이 Frontend와 Backend 개발에 함께 참여하면서 PL, AA, DA, BA, TA 역할을 나누어 협업했습니다.
 
 | 역할 | 담당자 |
 |---|---|
-| PL | `[확인 필요]` |
-| AA | 신동근 ([dongkun8130](https://github.com/dongkun8130)), `[확인 필요]` |
-| DA | 신동근 (보조), `[확인 필요]` |
-| BA | `[확인 필요]` |
-| TA | `[확인 필요]` |
+| PL | 1명 |
+| AA | 2명 |
+| DA | 2명 |
+| BA | 1명 |
+| TA | 1명 |
 
 ---
 

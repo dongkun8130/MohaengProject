@@ -224,11 +224,3 @@ React(관리자) 프로젝트 실행 방법은 [MohaengReact 저장소](https://
 | DA | 2명 |
 | BA | 1명 |
 | TA | 1명 |
-
----
-
-## 📄 License / Contact
-
-- **License**: `[확인 필요]`
-- **Contact**: dongkun8130@naver.com
-- **GitHub**: [github.com/dongkun8130](https://github.com/dongkun8130)

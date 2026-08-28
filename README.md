@@ -122,6 +122,7 @@ flowchart TD
     F -.-> J[Spring AOP<br/>공통 로깅]
     G --> K[외부 API<br/>TAGO / TourAPI / Toss / reCAPTCHA]
     F --> L[WebSocket / STOMP<br/>실시간 채팅]
+```
 
 - `/api/**` : React 관리자 페이지 요청 (Axios로 호출), JWT 인증 필터 적용, CSRF 비활성화
 - `/jsp/**` : JSP 일반/기업회원 요청 (AJAX 사용), 기존 세션 인증 및 CSRF 검증 유지

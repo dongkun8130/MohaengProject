@@ -108,20 +108,17 @@ React Repository
 
 ```mermaid
 flowchart TD
-    A[React 관리자 페이지<br/>별도 Repository] -->|Axios + JWT| C[/api/**]
-    B[JSP 일반·기업회원<br/>현재 Repository] -->|AJAX + Session + CSRF| D[/jsp/**]
+    A[React 관리자 페이지] -->|Axios + JWT| C[Spring Security]
+    B[JSP 일반·기업회원] -->|AJAX + Session| C
 
-    C --> E[Spring Security]
-    D --> E
+    C --> D[Controller]
+    D --> E[Service]
+    E --> F[Mapper]
+    F --> G[(Oracle DB)]
 
-    E --> F[Controller]
-    F --> G[Service]
-    G --> H[Mapper - MyBatis]
-    H --> I[(Oracle DB)]
-
-    F -.-> J[Spring AOP<br/>공통 로깅]
-    G --> K[외부 API<br/>TAGO / TourAPI / Toss / reCAPTCHA]
-    F --> L[WebSocket / STOMP<br/>실시간 채팅]
+    E --> H[외부 API]
+    D --> I[WebSocket / STOMP]
+    D -.-> J[Spring AOP<br/>공통 로깅]
 ```
 
 - `/api/**` : React 관리자 페이지 요청 (Axios로 호출), JWT 인증 필터 적용, CSRF 비활성화

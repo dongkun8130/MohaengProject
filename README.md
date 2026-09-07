@@ -96,49 +96,55 @@ React Repository
 
 ---
 
-## 📂 Project Structure
-
-```text
-[실제 Backend Repository 구조 확인 필요]
-```
-
----
-
 ## 🔨 Architecture
 
 ```mermaid
-flowchart TD
+flowchart TB
     A[React 관리자 페이지] -->|Axios + JWT| C["/api/** 필터체인"]
     B[JSP 일반·기업회원] -->|AJAX + Session| D["/jsp/** 필터체인"]
-    C --> E[Controller]
+
+    subgraph AOP["Spring AOP - @Around Advice로 공통 로깅"]
+        E[Controller]
+        F[Service]
+    end
+
+    C --> E
     D --> E
-    E --> F[Service]
+    E --> F
     F --> G[Mapper]
     G --> H[Oracle DB]
     F --> I[외부 API]
     E --> J[WebSocket / STOMP]
-    E --> K[Spring AOP 공통 로깅]
 ```
 
 - `/api/**` : React 관리자 페이지 요청 (Axios로 호출), JWT 인증 필터 적용, CSRF 비활성화
 - `/jsp/**` : JSP 일반/기업회원 요청 (AJAX 사용), 기존 세션 인증 및 CSRF 검증 유지
 - React 개발 서버(`http://localhost:7272`)는 `@CrossOrigin(allowCredentials = "true")`으로 명시적 허용
 - 로그인 성공 시 발급한 JWT를 React 클라이언트의 localStorage에 저장, Axios 인터셉터로 요청 헤더에 자동 첨부하고 401/403 응답 시 토큰 제거 및 재로그인 처리
+- `@Aspect` 클래스의 `@Around` Advice가 Controller/Service 실행을 감싸 요청 진입·응답 반환 시점에 로그를 남기는 구조입니다
 
 ---
 
 ## 🗄️ Database / ERD
 
-항공권 도메인은 3정규화 및 PK/FK 관계 설계, 시퀀스 기반 PK 생성 방식으로 구성했습니다.
+### 전체 ERD
 
-- `AIRLINE`, `AIRPORT` : 항공사/공항 기준 정보
-- `FLIGHT_PRODUCT` : 항공권 상품 정보 (출/도착 공항, 일정, 좌석 등급, 가격 등)
-- `FLIGHT_RESERVATION` : 항공 예약 정보 (예약자, 결제키, 총 결제금액)
-- `FLIGHT_PASSENGERS` : 탑승객 정보 (`FLIGHT_RESERVATION`과 1:N)
+<img width="1400" alt="Mohaeng 전체 ERD" src="https://github.com/user-attachments/assets/37ef01e1-e183-4de9-b6f1-ec72d3c388b5" />
 
-<!-- ERD 이미지 추가 -->
+본 프로젝트는 여행 예약·회원·커뮤니티·관리자 등의 도메인을 분리하여 데이터 구조를 설계했습니다.
 
-`[숙소 / 투어 / 커뮤니티 도메인 ERD는 확인 필요]`
+### 담당 도메인 - 항공권
+
+전체 ERD 중 본인이 설계 및 구현에 참여한 항공권 도메인입니다.
+
+- `AIRLINE`, `AIRPORT` : 항공사 및 공항 기준정보
+- `FLIGHT_PRODUCT` : 항공권 상품 정보
+- `FLIGHT_RESERVATION` : 항공 예약 및 결제 정보
+- `FLIGHT_PASSENGERS` : 예약별 탑승객 정보
+- PK / FK를 통한 엔티티 간 참조 관계 구성
+- 예약 : 탑승객 1:N 관계 설계
+- 3정규화를 고려한 데이터 구조 설계
+- Oracle Sequence 기반 PK 생성
 
 ---
 

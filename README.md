@@ -1,4 +1,4 @@
-# ✈️ 모행 (Mohaeng)
+<img width="4807" height="719" alt="image" src="https://github.com/user-attachments/assets/f3d4d3a3-3887-4e96-bfeb-7601c1dfcaa9" /># ✈️ 모행 (Mohaeng)
 
 ![Java](https://img.shields.io/badge/Java-21-007396?logo=openjdk&logoColor=white)
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-6DB33F?logo=springboot&logoColor=white)
@@ -129,7 +129,7 @@ flowchart TB
 
 ### 전체 ERD
 
-<img width="1400" alt="Mohaeng 전체 ERD" src="https://github.com/user-attachments/assets/32d48cd5-b763-4821-87eb-c6fd68fbbc24" />
+<img width="900" alt="Mohaeng 전체 ERD" src="https://github.com/user-attachments/assets/32d48cd5-b763-4821-87eb-c6fd68fbbc24" />
 
 본 프로젝트는 여행 예약·회원·커뮤니티·관리자 등의 도메인을 분리하여 데이터 구조를 설계했습니다.
 
@@ -137,10 +137,15 @@ flowchart TB
 
 전체 ERD 중 본인이 설계 및 구현에 참여한 항공권 도메인입니다.
 
+[<img width="1000" alt="항공권 도메인 ERD" src="https://github.com/user-attachments/assets/354697a3-5878-44b3-8a28-1e3a03bed92b" />](https://github.com/user-attachments/assets/354697a3-5878-44b3-8a28-1e3a03bed92b)
+
+항공사·공항 기준정보를 기반으로 항공상품을 구성하고, 항공상품 → 예약 → 탑승객으로 이어지는 데이터 관계를 설계했습니다.
+
 - `AIRLINE`, `AIRPORT` : 항공사 및 공항 기준정보
 - `FLIGHT_PRODUCT` : 항공권 상품 정보
 - `FLIGHT_RESERVATION` : 항공 예약 및 결제 정보
 - `FLIGHT_PASSENGERS` : 예약별 탑승객 정보
+- `FLIGHT_RESV_AGREE` : 예약 시 약관 동의 이력 (구매약관, 개인정보 수집·이용, 취소/환불 규정, 마케팅 수신 동의 등)
 - PK / FK를 통한 엔티티 간 참조 관계 구성
 - 예약 : 탑승객 1:N 관계 설계
 - 3정규화를 고려한 데이터 구조 설계

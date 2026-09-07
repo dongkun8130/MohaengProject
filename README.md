@@ -137,7 +137,7 @@ flowchart TB
 
 전체 ERD 중 본인이 설계 및 구현에 참여한 항공권 도메인입니다.
 
-[<img width="1000" alt="항공권 도메인 ERD" src="https://github.com/user-attachments/assets/354697a3-5878-44b3-8a28-1e3a03bed92b" />](https://github.com/user-attachments/assets/354697a3-5878-44b3-8a28-1e3a03bed92b)
+👉 [항공권 도메인 ERD 원본 보기](https://github.com/user-attachments/assets/354697a3-5878-44b3-8a28-1e3a03bed92b)
 
 항공사·공항 기준정보를 기반으로 항공상품을 구성하고, 항공상품 → 예약 → 탑승객으로 이어지는 데이터 관계를 설계했습니다.
 

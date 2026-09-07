@@ -129,7 +129,7 @@ flowchart TB
 
 ### 전체 ERD
 
-<img width="1400" alt="Mohaeng 전체 ERD" src="https://github.com/user-attachments/assets/37ef01e1-e183-4de9-b6f1-ec72d3c388b5" />
+<img width="1400" alt="Mohaeng 전체 ERD" src="https://github.com/user-attachments/assets/32d48cd5-b763-4821-87eb-c6fd68fbbc24" />
 
 본 프로젝트는 여행 예약·회원·커뮤니티·관리자 등의 도메인을 분리하여 데이터 구조를 설계했습니다.
 

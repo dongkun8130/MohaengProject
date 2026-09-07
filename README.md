@@ -1,4 +1,4 @@
-<img width="4807" height="719" alt="image" src="https://github.com/user-attachments/assets/f3d4d3a3-3887-4e96-bfeb-7601c1dfcaa9" /># ✈️ 모행 (Mohaeng)
+## ✈️ 모행 (Mohaeng)
 
 ![Java](https://img.shields.io/badge/Java-21-007396?logo=openjdk&logoColor=white)
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-6DB33F?logo=springboot&logoColor=white)

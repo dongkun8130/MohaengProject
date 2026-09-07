@@ -31,7 +31,7 @@ React Repository
 오프라인·다수 플랫폼에 분산되어 있던 여행 예약 정보(항공권·숙소·투어)와 커뮤니티 기능을 하나의 플랫폼에 통합한 프로젝트입니다. 일반/기업회원은 JSP 기반 화면을, 관리자는 React 기반 화면을 사용하며, 두 클라이언트가 하나의 Spring 백엔드를 공유합니다.
 
 - **기간**: 2025.12.03 ~ 2026.02.03 (9주)
-- **팀 구성**: 총 7명으로 구성된 팀 프로젝트로, 모든 팀원이 Frontend와 Backend 개발에 함께 참여했으며 PL, AA, DA, BA, TA 역할을 나누어 협업했습니다. (PL 1 · AA 2 · DA 2 · BA 1 · TA 1)
+- **팀 구성**: 총 7명의 모든 팀원이 Frontend와 Backend 개발에 함께 참여했으며 PL, AA, DA, BA, TA 역할을 나누어 협업했습니다. (PL 1 | AA 2 | DA 2 | BA 1 | TA 1)
 
 ---
 
@@ -194,14 +194,16 @@ flowchart TB
 ### Requirements
 
 - JDK 21
-- Maven
 - Apache Tomcat 10.1
 - Oracle DB
+- Maven (STS/Eclipse의 Maven 프로젝트로 관리)
 
-### Configuration
+### Installation
 
-외부 API 및 데이터베이스 인증 정보는 환경변수로 관리합니다.
-실제 인증 정보는 Repository에 포함하지 않습니다.
+1. Repository를 클론합니다.
+2. STS(또는 Eclipse)에서 **Import → Existing Maven Projects**로 불러옵니다.
+3. `src/main/resources/application-secret.properties`에 DB 및 외부 API 인증 정보를 설정합니다. (`.gitignore`로 제외되어 있어 실제 값은 포함되지 않음)
+4. Tomcat 10.1 서버를 등록한 뒤 프로젝트를 Run on Server로 실행합니다.
 
 React(관리자) 프로젝트 실행 방법은 [MohaengReact 저장소](https://github.com/dongkun8130/MohaengReact)를 참고하세요.
 
@@ -222,15 +224,3 @@ React(관리자) 프로젝트 실행 방법은 [MohaengReact 저장소](https://
 - 프로세스 흐름도 및 프로세스 정의서 작성
 
 ---
-
-## 👨‍👩‍👧‍👦 Team
-
-총 7명이 참여한 팀 프로젝트입니다. 모든 팀원이 Frontend와 Backend 개발에 함께 참여하면서 PL, AA, DA, BA, TA 역할을 나누어 협업했습니다.
-
-| 역할 | 담당자 |
-|---|---|
-| PL | 1명 |
-| AA | 2명 |
-| DA | 2명 |
-| BA | 1명 |
-| TA | 1명 |

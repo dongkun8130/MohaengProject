@@ -31,7 +31,7 @@ React Repository
 오프라인·다수 플랫폼에 분산되어 있던 여행 예약 정보(항공권·숙소·투어)와 커뮤니티 기능을 하나의 플랫폼에 통합한 프로젝트입니다. 일반/기업회원은 JSP 기반 화면을, 관리자는 React 기반 화면을 사용하며, 두 클라이언트가 하나의 Spring 백엔드를 공유합니다.
 
 - **기간**: 2025.12.03 ~ 2026.02.03 (9주)
-- **팀 구성**: 총 7명의 모든 팀원이 Frontend와 Backend 개발에 함께 참여했으며 PL, AA, DA, BA, TA 역할을 나누어 협업했습니다. (PL 1 | AA 2 | DA 2 | BA 1 | TA 1)
+- **팀**: 총 7명의 모든 팀원이 Frontend와 Backend 개발에 함께 참여했으며 PL, AA, DA, BA, TA 역할을 나누어 협업했습니다. (PL 1 | AA 2 | DA 2 | BA 1 | TA 1)
 
 ---
 
@@ -56,7 +56,8 @@ React Repository
 ## ⭐ Main Features
 
 - AI 기반 개인 맞춤형 여행 계획 생성
-- 항공권 검색 및 예약 (국토교통부 항공 관련 공공 API 연동)
+- AI 챗봇 (Claude API 연동)
+- 항공권 검색 및 예약 (국토교통부 국내항공운항정보 API 연동)
 - 좌석 등급별 실시간 예약 좌석 검증 (매진 항공편 결제 진입 차단)
 - 숙소 / 투어 예약
 - 실시간 채팅 (WebSocket / STOMP)
@@ -82,10 +83,14 @@ React Repository
 - Oracle DB
 
 ### External API
-- 국토교통부에서 제공하는 항공 관련 공공 API (TAGO)
+- 국토교통부 국내항공운항정보 API (TAGO)
 - TourAPI (투어)
 - reCAPTCHA
 - Toss Payments
+- Google Gemini — AI 기반 여행 계획 생성
+- Claude API — 챗봇
+- Mailgun — 이메일 발송
+- Google / Naver OAuth2 — 소셜 로그인
 
 ### Tools
 - Git, GitHub, Redmine
@@ -198,12 +203,26 @@ flowchart TB
 - Oracle DB
 - Maven (STS/Eclipse의 Maven 프로젝트로 관리)
 
+### Configuration
+
+`src/main/resources/application-secret.properties` 파일에 아래 항목의 인증 정보를 설정합니다.
+이 파일은 `.gitignore`로 제외되어 있으며, 실제 값은 Repository에 포함되지 않습니다.
+
+- Google / Naver 소셜 로그인 (OAuth2 Client ID/Secret)
+- Mailgun 이메일 발송 API
+- 국토교통부 국내항공운항정보 API (TAGO)
+- 한국관광공사 국문 관광정보 API (TourAPI)
+- Toss Payments API
+- Google Gemini API (여행 계획 생성)
+- Claude API (챗봇)
+
 ### Installation
 
 1. Repository를 클론합니다.
 2. STS(또는 Eclipse)에서 **Import → Existing Maven Projects**로 불러옵니다.
-3. `src/main/resources/application-secret.properties`에 DB 및 외부 API 인증 정보를 설정합니다. (`.gitignore`로 제외되어 있어 실제 값은 포함되지 않음)
+3. `application-secret.properties`를 설정합니다. (Configuration 참고)
 4. Tomcat 10.1 서버를 등록한 뒤 프로젝트를 Run on Server로 실행합니다.
+5. 브라우저에서 `http://localhost:8272`로 접속합니다.
 
 React(관리자) 프로젝트 실행 방법은 [MohaengReact 저장소](https://github.com/dongkun8130/MohaengReact)를 참고하세요.
 
@@ -223,4 +242,5 @@ React(관리자) 프로젝트 실행 방법은 [MohaengReact 저장소](https://
 - 기업회원 전용 예약내역·리뷰관리 화면 구현 (Bootstrap 반응형 UI)
 - 프로세스 흐름도 및 프로세스 정의서 작성
 
+📧 dongkun8130@naver.com  |  🔗 [github.com/dongkun8130](https://github.com/dongkun8130)
 ---

@@ -37,20 +37,17 @@ React Repository
 
 ## 🖥️ 주요 화면
 
+### 메인 화면
 <img width="900" alt="image" src="https://github.com/user-attachments/assets/a547cece-c051-4875-b219-0b92620d73db" />
 
-
-### 관리자 페이지
-<!-- 관리자 화면 이미지 -->
-
-### 기업회원 예약·리뷰 관리
-<!-- 기업회원 화면 이미지 -->
+### AI 추천 일정
+<img width="900" alt="스크린샷 2026-09-09 185116" src="https://github.com/user-attachments/assets/7ecc9497-bcae-4e83-a177-f27e638621ad" />
 
 ### 항공권 검색 및 예약
-<!-- 항공권 화면 이미지 -->
+<img width="900" alt="스크린샷 2026-09-09 185200" src="https://github.com/user-attachments/assets/bbd96d74-fa5b-4bbe-87a4-bef4f64c574c" />
 
-### 로그 조회
-<!-- 로그 조회 화면 이미지 -->
+### 기업회원 상품 등록
+<img width="900" alt="스크린샷 2026-09-09 185345" src="https://github.com/user-attachments/assets/0f0e8984-2e48-421c-b597-6d794e6eeef2" />
 
 ---
 

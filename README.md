@@ -156,42 +156,6 @@ flowchart TB
 
 ---
 
-## 🧩 Technical Challenges
-
-### 1. Spring Security 하이브리드 인증
-
-**문제**: React(JWT)와 JSP(Session)를 같은 애플리케이션에서 사용하는 구조에서 React API 요청 시 403 Forbidden 및 CORS 오류 발생.
-
-**해결**: `@Order`로 `SecurityFilterChain`을 `/api/**`(JWT, CSRF 비활성화)와 `/jsp/**`(Session, CSRF 유지)로 분리하고, `@CrossOrigin`으로 React 개발 서버 Origin을 허용. 로그인 성공 시 발급한 JWT를 localStorage에 저장하고, Axios 인터셉터로 토큰 첨부 및 401/403 시 재로그인 처리.
-
-**결과**: 세션 인증과 토큰 인증이 하나의 애플리케이션 안에서 충돌 없이 동작하도록 필터 체인을 분리했습니다.
-
-### 2. 국토교통부 항공 관련 공공 API 연동
-
-**문제**: 항공 공공 API(TAGO) 호출 시 `serviceKey`가 중복 인코딩되어 인증 실패, 응답 결과 건수에 따라 JSON Object/Array 형식이 달라져 매핑 오류 발생.
-
-**해결**: `DefaultUriBuilderFactory`를 `EncodingMode.NONE`으로 설정해 인코딩 개입을 제거. `ObjectMapper`로 응답을 `JsonNode` 트리로 파싱한 뒤 `isArray()`/`isObject()`로 분기 처리.
-
-**결과**: 중복 인코딩으로 인한 인증 실패를 해결했고, 응답이 Object/Array 어느 형태로 오더라도 처리할 수 있도록 분기 로직을 구현했습니다.
-
-### 3. MyBatis 동적 SQL 조건 생성 오류 (ORA-00933)
-
-**문제**: 관리자 로그 조회 화면에서 각 `<if>` 태그에 `WHERE`를 개별적으로 작성해 필터 조합에 따라 `WHERE`가 올바르게 생성되지 않는 문제가 발생.
-
-**해결**: MyBatis `<where>` 태그로 조건절을 통합하고, 각 `<if>` 태그에서는 조건만 생성하도록 수정. 목록 조회와 COUNT 쿼리의 필터 조건도 일치시킴.
-
-**결과**: 단일·복합 필터에서도 동적 SQL이 일관된 형태로 생성되도록 개선하고, 목록 조회와 COUNT 쿼리의 조건 불일치 문제를 해결.
-
-### 4. Spring AOP 기반 공통 로깅
-
-**문제**: 여러 Controller/Service에서 요청 처리 로그를 개별적으로 작성해야 하는 상황.
-
-**해결**: Spring AOP로 Controller-Service-Mapper 흐름을 관통하는 공통 로깅 구조를 설계.
-
-**결과**: 공통 로깅 로직을 AOP로 분리해 각 계층의 중복 로그 코드를 줄였습니다.
-
----
-
 ## 💻 Getting Started
 
 ### Requirements

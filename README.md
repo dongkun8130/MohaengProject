@@ -37,7 +37,8 @@ React Repository
 
 ## 🖥️ 주요 화면
 
-<!-- 주요 화면 이미지 추가 -->
+<img width="900" alt="image" src="https://github.com/user-attachments/assets/e4abf319-37ad-49e4-9316-2fafa97f4ba0" />
+
 
 ### 관리자 페이지
 <!-- 관리자 화면 이미지 -->

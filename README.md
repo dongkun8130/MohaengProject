@@ -37,7 +37,7 @@ React Repository
 
 ## 🖥️ 주요 화면
 
-<img width="900" alt="image" src="https://github.com/user-attachments/assets/e4abf319-37ad-49e4-9316-2fafa97f4ba0" />
+<img width="900" alt="image" src="https://github.com/user-attachments/assets/a547cece-c051-4875-b219-0b92620d73db" />
 
 
 ### 관리자 페이지

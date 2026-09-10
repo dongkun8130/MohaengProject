@@ -197,11 +197,11 @@ React(관리자) 프로젝트 실행 방법은 [MohaengReact 저장소](https://
 - Spring Security 하이브리드 인증 구조 설계 (Session + JWT)
 - 항공권 검색 기능 및 국토교통부 TAGO API 연동
 - 항공권 도메인 DB 설계 (3정규화, PK/FK, 시퀀스 기반 PK)
-- 관리자 로그 조회 화면 MyBatis 동적 SQL 오류(ORA-00933) 해결
+- 관리자 로그 조회 화면 구현
 - 좌석 등급별 실시간 예약 좌석 검증 로직 구현
-- Spring AOP 기반 공통 로깅 구조 설계
+- 공통 요청·응답 로그를 DB에 저장하는 Spring AOP 기반 공통 로깅 구조 설계
 - 외부 API(TourAPI, reCAPTCHA, 토스페이먼츠) 공통 모듈화
-- 기업회원 전용 예약내역·리뷰관리 화면 구현 (Bootstrap 반응형 UI)
+- 기업회원 전용 상품 등록·수정·삭제, 예약내역 조회, 리뷰 관리 기능 Bootstrap 반응형 UI로 구현
 - 프로세스 흐름도 및 프로세스 정의서 작성
 
 📧 dongkun8130@naver.com  |  🔗 [github.com/dongkun8130](https://github.com/dongkun8130)

@@ -105,26 +105,28 @@ React Repository
 flowchart TB
     A[React 관리자 페이지] -->|Axios + JWT| C["/api/** 필터체인"]
     B[JSP 일반·기업회원] -->|AJAX + Session| D["/jsp/** 필터체인"]
+    K[실시간 채팅 클라이언트] -->|STOMP 메시지| M[STOMP Controller]
 
     subgraph AOP["Spring AOP - @Around Advice로 공통 로깅"]
         E[Controller]
-        F[Service]
+        M
     end
 
     C --> E
     D --> E
-    E --> F
+    E --> F[Service]
+    M --> F
     F --> G[Mapper]
     G --> H[Oracle DB]
     F --> I[외부 API]
-    E --> J[WebSocket / STOMP]
 ```
 
 - `/api/**` : React 관리자 페이지 요청 (Axios로 호출), JWT 인증 필터 적용, CSRF 비활성화
 - `/jsp/**` : JSP 일반/기업회원 요청 (AJAX 사용), 기존 세션 인증 및 CSRF 검증 유지
 - React 개발 서버(`http://localhost:7272`)는 `@CrossOrigin(allowCredentials = "true")`으로 명시적 허용
 - 로그인 성공 시 발급한 JWT를 React 클라이언트의 localStorage에 저장, Axios 인터셉터로 요청 헤더에 자동 첨부하고 401/403 응답 시 토큰 제거 및 재로그인 처리
-- `@Aspect` 클래스의 `@Around` Advice가 Controller/Service 실행을 감싸 요청 진입·응답 반환 시점에 로그를 남기는 구조입니다
+- `@Aspect` 클래스의 `@Around` Advice가 클래스명이 `Controller`로 끝나는 메서드 실행을 포인트컷으로 감싸 로그를 남기며, HTTP Controller와 STOMP Controller 모두 각각 독립된 진입점으로 AOP가 적용됩니다
+- STOMP Controller는 HTTP 요청 스코프가 없어 `RequestContextHolder`가 `null`을 반환하므로, 이 경우 고정 식별자로 처리해 예외 없이 로그가 남도록 분기 처리했습니다
 
 ---
 
@@ -199,10 +201,10 @@ React(관리자) 프로젝트 실행 방법은 [MohaengReact 저장소](https://
 - 항공권 도메인 DB 설계 (3정규화, PK/FK, 시퀀스 기반 PK)
 - 관리자 로그 조회 화면 구현
 - 좌석 등급별 실시간 예약 좌석 검증 로직 구현
-- 공통 요청·응답 로그를 DB에 저장하는 Spring AOP 기반 공통 로깅 구조 설계
+- 공통 로그를 DB에 저장하는 Spring AOP 기반 공통 로깅 구조 설계
 - 외부 API(TourAPI, reCAPTCHA, 토스페이먼츠) 공통 모듈화
-- 기업회원 전용 상품 등록·수정·삭제, 예약내역 조회, 리뷰 관리 기능 Bootstrap 반응형 UI로 구현
-- 프로세스 흐름도 및 프로세스 정의서 작성
+- 기업회원 상품 관리, 예약내역 조회, 리뷰 관리 기능 Bootstrap 반응형 UI로 구현
+- 프로세스 흐름도, 프로세스 정의서 작성
 
 📧 dongkun8130@naver.com  |  🔗 [github.com/dongkun8130](https://github.com/dongkun8130)
 ---

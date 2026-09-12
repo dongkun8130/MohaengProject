@@ -1,16 +1,210 @@
-# 여행 커뮤니티 플랫폼 (팀 프로젝트)
+## ✈️ 모행 (Mohaeng)
 
-## 📌 프로젝트 소개
-﻿AI 기반 통합 여행 플랫폼 웹 서비스입니다.
+![Java](https://img.shields.io/badge/Java-21-007396?logo=openjdk&logoColor=white)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-6DB33F?logo=springboot&logoColor=white)
+![Spring Security](https://img.shields.io/badge/Spring%20Security-6DB33F?logo=springsecurity&logoColor=white)
+![MyBatis](https://img.shields.io/badge/MyBatis-000000?logo=mybatis&logoColor=white)
+![Oracle](https://img.shields.io/badge/Oracle%20DB-F80000?logo=oracle&logoColor=white)
+![React](https://img.shields.io/badge/React-Admin-61DAFB?logo=react&logoColor=black)
+![WebSocket](https://img.shields.io/badge/WebSocket-STOMP-blue)
 
-## 📆 개발 기간
-2025.12 ~ 2026.02
+> AI 기반 개인 맞춤 여행 계획부터 항공권·숙소·투어 예약, 실시간 채팅, 커뮤니티까지 제공하는 여행 통합 플랫폼
 
-## 👥 팀 구성
-- 백엔드 7명 / 프론트 7명
+이 저장소는 **Backend(Spring/JSP) 저장소**이며, 팀 프로젝트 전체를 소개하는 대표 README를 겸합니다.
 
-## 🛠 기술 스택
-- Backend: Spring Boot, Spring Security, MyBatis
-- DB: Oracle
-- Frontend: JSP, JavaScript
-- Infra: GitHub, STS
+모행은 하나의 팀 프로젝트이며, Backend와 React Frontend를 별도의 GitHub Repository에서 관리했습니다.
+
+```text
+Backend Repository (현재)
+→ Spring / JSP 기반 Backend 및 일반·기업회원 화면
+
+React Repository
+→ React 기반 관리자 페이지
+```
+
+- React Repository: [MohaengReact](https://github.com/dongkun8130/MohaengReact)
+
+---
+
+## 📖 Description
+
+오프라인·다수 플랫폼에 분산되어 있던 여행 예약 정보(항공권·숙소·투어)와 커뮤니티 기능을 하나의 플랫폼에 통합한 프로젝트입니다. 일반/기업회원은 JSP 기반 화면을, 관리자는 React 기반 화면을 사용하며, 두 클라이언트가 하나의 Spring 백엔드를 공유합니다.
+
+- **기간**: 2025.12.03 ~ 2026.02.03 (9주)
+- **팀**: 총 7명의 모든 팀원이 Frontend와 Backend 개발에 함께 참여했으며 PL, AA, DA, BA, TA 역할을 나누어 협업했습니다. (PL 1 | AA 2 | DA 2 | BA 1 | TA 1)
+
+---
+
+## 🖥️ 주요 화면
+
+### 메인 화면
+<img width="900" alt="메인 화면" src="https://github.com/user-attachments/assets/a547cece-c051-4875-b219-0b92620d73db" />
+
+### AI 추천 일정
+<img width="900" alt="AI 추천 일정" src="https://github.com/user-attachments/assets/7ecc9497-bcae-4e83-a177-f27e638621ad" />
+
+### 항공권 검색 및 예약
+<img width="900" alt="항공권 검색 및 예약" src="https://github.com/user-attachments/assets/bbd96d74-fa5b-4bbe-87a4-bef4f64c574c" />
+
+### 기업회원 상품 등록
+<img width="900" alt="기업회원 상품 등록" src="https://github.com/user-attachments/assets/0f0e8984-2e48-421c-b597-6d794e6eeef2" />
+
+---
+
+## ⭐ Main Features
+
+- AI 기반 개인 맞춤형 여행 계획 생성
+- AI 챗봇 (Claude API 연동)
+- 항공권 검색 및 예약 (국토교통부 국내항공운항정보 API 연동)
+- 좌석 등급별 실시간 예약 좌석 검증 (매진 항공편 결제 진입 차단)
+- 숙소 / 투어 예약
+- 실시간 채팅 (WebSocket / STOMP)
+- 여행 정보 커뮤니티
+- 기업회원 전용 예약내역 · 리뷰관리 화면
+- 결제 연동 (토스페이먼츠)
+
+---
+
+## 🔧 Tech Stack
+
+### Backend
+- Java 21
+- Spring Boot
+- Spring Security
+- MyBatis
+
+### Frontend
+- JSP, JavaScript, jQuery, AJAX, HTML5/CSS3, Bootstrap
+- React, Axios
+
+### Database
+- Oracle DB
+
+### External API
+- 국토교통부 국내항공운항정보 API (TAGO)
+- TourAPI (투어)
+- reCAPTCHA
+- Toss Payments
+- Google Gemini — AI 기반 여행 계획 생성
+- Claude API — 챗봇
+- Mailgun — 이메일 발송
+- Google / Naver OAuth2 — 소셜 로그인
+
+### Tools
+- Git, GitHub, Redmine
+
+### 기타
+- WebSocket (STOMP)
+- WAS: Apache Tomcat 10.1
+
+---
+
+## 🔨 Architecture
+
+```mermaid
+flowchart TB
+    A[React 관리자 페이지] -->|Axios + JWT| C["/api/** 필터체인"]
+    B[JSP 일반·기업회원] -->|AJAX + Session| D["/jsp/** 필터체인"]
+    K[실시간 채팅 클라이언트] -->|STOMP 메시지| M[STOMP Controller]
+
+    subgraph AOP["Spring AOP - @Around Advice로 공통 로깅"]
+        E[Controller]
+        M
+    end
+
+    C --> E
+    D --> E
+    E --> F[Service]
+    M --> F
+    F --> G[Mapper]
+    G --> H[Oracle DB]
+    F --> I[외부 API]
+```
+
+- `/api/**` : React 관리자 페이지 요청 (Axios로 호출), JWT 인증 필터 적용, CSRF 비활성화
+- `/jsp/**` : JSP 일반/기업회원 요청 (AJAX 사용), 기존 세션 인증 및 CSRF 검증 유지
+- React 개발 서버(`http://localhost:7272`)는 `@CrossOrigin(allowCredentials = "true")`으로 명시적 허용
+- 로그인 성공 시 발급한 JWT를 React 클라이언트의 localStorage에 저장, Axios 인터셉터로 요청 헤더에 자동 첨부하고 401/403 응답 시 토큰 제거 및 재로그인 처리
+- `@Aspect` 클래스의 `@Around` Advice가 클래스명이 `Controller`로 끝나는 메서드 실행을 포인트컷으로 감싸 로그를 남기며, HTTP Controller와 STOMP Controller 모두 각각 독립된 진입점으로 AOP가 적용됩니다
+- STOMP Controller는 HTTP 요청 스코프가 없어 `RequestContextHolder`가 `null`을 반환하므로, 이 경우 고정 식별자로 처리해 예외 없이 로그가 남도록 분기 처리했습니다
+
+---
+
+## 🗄️ Database / ERD
+
+### 전체 ERD
+
+<img width="900" alt="Mohaeng 전체 ERD" src="https://github.com/user-attachments/assets/32d48cd5-b763-4821-87eb-c6fd68fbbc24" />
+
+본 프로젝트는 여행 예약·회원·커뮤니티·관리자 등의 도메인을 분리하여 데이터 구조를 설계했습니다.
+
+### 담당 도메인 - 항공권
+
+전체 ERD 중 본인이 설계 및 구현에 참여한 항공권 도메인입니다.
+
+👉 [항공권 도메인 ERD 원본 보기](https://github.com/user-attachments/assets/354697a3-5878-44b3-8a28-1e3a03bed92b)
+
+항공사·공항 기준정보를 기반으로 항공상품을 구성하고, 항공상품 → 예약 → 탑승객으로 이어지는 데이터 관계를 설계했습니다.
+
+- `AIRLINE`, `AIRPORT` : 항공사 및 공항 기준정보
+- `FLIGHT_PRODUCT` : 항공권 상품 정보
+- `FLIGHT_RESERVATION` : 항공 예약 및 결제 정보
+- `FLIGHT_PASSENGERS` : 예약별 탑승객 정보
+- `FLIGHT_RESV_AGREE` : 예약 시 약관 동의 이력 (구매약관, 개인정보 수집·이용, 취소/환불 규정, 마케팅 수신 동의 등)
+- PK / FK를 통한 엔티티 간 참조 관계 구성
+- 예약 : 탑승객 1:N 관계 설계
+- 3정규화를 고려한 데이터 구조 설계
+- Oracle Sequence 기반 PK 생성
+
+---
+
+## 💻 Getting Started
+
+### Requirements
+
+- JDK 21
+- Apache Tomcat 10.1
+- Oracle DB
+- Maven (STS/Eclipse의 Maven 프로젝트로 관리)
+
+### Configuration
+
+`src/main/resources/application-secret.properties` 파일에 아래 항목의 인증 정보를 설정합니다.
+이 파일은 `.gitignore`로 제외되어 있으며, 실제 값은 Repository에 포함되지 않습니다.
+
+- Google / Naver 소셜 로그인 (OAuth2 Client ID/Secret)
+- Mailgun 이메일 발송 API
+- 국토교통부 국내항공운항정보 API (TAGO)
+- 한국관광공사 국문 관광정보 API (TourAPI)
+- Toss Payments API
+- Google Gemini API (여행 계획 생성)
+- Claude API (챗봇)
+
+### Installation
+
+1. Repository를 클론합니다.
+2. STS(또는 Eclipse)에서 **Import → Existing Maven Projects**로 불러옵니다.
+3. `application-secret.properties`를 설정합니다. (Configuration 참고)
+4. Tomcat 10.1 서버를 등록한 뒤 프로젝트를 Run on Server로 실행합니다.
+5. 브라우저에서 `http://localhost:8272`로 접속합니다.
+
+React(관리자) 프로젝트 실행 방법은 [MohaengReact 저장소](https://github.com/dongkun8130/MohaengReact)를 참고하세요.
+
+---
+
+## 👨‍💻 Role & Contribution (신동근)
+
+**역할**: AA(Application Architect) & 보조 DA(Database Architect) & Backend Developer
+
+- Spring Security 하이브리드 인증 구조 설계 (Session + JWT)
+- 항공권 검색 기능 및 국토교통부 TAGO API 연동
+- 항공권 도메인 DB 설계 (3정규화, PK/FK, 시퀀스 기반 PK)
+- 관리자 로그 조회 화면 구현
+- 좌석 등급별 실시간 예약 좌석 검증 로직 구현
+- 공통 로그를 DB에 저장하는 Spring AOP 기반 공통 로깅 구조 설계
+- 외부 API(TourAPI, reCAPTCHA, 토스페이먼츠) 공통 모듈화
+- 기업회원 상품 관리, 예약내역 조회, 리뷰 관리 기능 Bootstrap 반응형 UI로 구현
+- 프로세스 흐름도, 프로세스 정의서 작성
+
+📧 dongkun8130@naver.com  |  🔗 [github.com/dongkun8130](https://github.com/dongkun8130)
+---

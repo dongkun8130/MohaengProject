@@ -91,7 +91,7 @@ React Repository
 - Google / Naver OAuth2 — 소셜 로그인
 
 ### Tools
-- Git, GitHub, Redmine
+- Git, GitHub, Docker, Redmine
 
 ### 기타
 - WebSocket (STOMP)
